@@ -20,5 +20,6 @@ data class PersonVO(
 
     @field: JsonIgnore
     var gender: String = "",
+
     var birthDay: LocalDate = LocalDate.now()
 )
