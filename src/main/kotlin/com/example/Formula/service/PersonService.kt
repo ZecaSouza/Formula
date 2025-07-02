@@ -1,7 +1,7 @@
 package com.example.Formula.service
 
 import com.example.Formula.data.vo.v1.PersonVO
-import com.example.Formula.mapper.DozerMapper
+import com.example.Formula.mapper.ModelMapperWrapper
 import com.example.Formula.model.Person
 import com.example.Formula.repository.PersonRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,14 +21,14 @@ class PersonService(
         val person = repository.findById(id).orElseThrow {
             ResponseStatusException(HttpStatus.NOT_FOUND, "Person with id $id not found")
         }
-        return DozerMapper.passerObject(person, PersonVO::class.java)
+        return ModelMapperWrapper.map(person, PersonVO::class.java)
     }
 
     fun create(personVO: PersonVO): PersonVO {
         logger.info("Creating person: ${personVO.firstName}")
-        val entity: Person = DozerMapper.passerObject(personVO, Person::class.java)
+        val entity: Person = ModelMapperWrapper.map(personVO, Person::class.java)
         val saved = repository.save(entity)
-        return DozerMapper.passerObject(saved, PersonVO::class.java)
+        return ModelMapperWrapper.map(saved, PersonVO::class.java)
     }
 
     fun updateById(id: Long, personVO: PersonVO): PersonVO {
@@ -46,7 +46,7 @@ class PersonService(
         }
 
         val updated = repository.save(existingPerson)
-        return DozerMapper.passerObject(updated, PersonVO::class.java)
+        return ModelMapperWrapper.map(updated, PersonVO::class.java)
     }
 
     fun deleteById(id: Long) {
@@ -59,6 +59,6 @@ class PersonService(
 
     fun findAll(): List<PersonVO> {
         val persons = repository.findAll()
-        return DozerMapper.passerObjectList(persons, PersonVO::class.java)
+        return ModelMapperWrapper.mapList(persons, PersonVO::class.java)
     }
 }
