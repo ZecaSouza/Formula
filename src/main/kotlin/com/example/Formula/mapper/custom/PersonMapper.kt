@@ -9,7 +9,7 @@ public class PersonMapper {
 
     fun mapEntityToVO(person: Person): PersonVO {
         return PersonVO(
-            id = person.id,
+            key = person.id,
             firstName = person.firstName,
             lastName = person.lastName,
             address = person.address,
@@ -19,14 +19,14 @@ public class PersonMapper {
     }
 
     fun mapVOToEntity(vo: PersonVO): Person {
-        return Person(
-            id = vo.id,
-            firstName = vo.firstName,
-            lastName = vo.lastName,
-            address = vo.address,
-            gender = vo.gender,
-            birthDay = vo.birthDay
-        )
+        val person = Person()
+        person.id = vo.key
+        person.firstName = vo.firstName
+        person.lastName = vo.lastName
+        person.address = vo.address
+        person.gender = vo.gender
+        person.birthDay = vo.birthDay
+        return person
     }
 
 }

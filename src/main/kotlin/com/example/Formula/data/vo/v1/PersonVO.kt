@@ -3,23 +3,25 @@ package com.example.Formula.data.vo.v1
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
+import com.github.dozermapper.core.Mapping
+import org.springframework.hateoas.RepresentationModel
 import java.time.LocalDate
 
 @JsonPropertyOrder("id", "address", "first_Name", "last_Name", "gender", "birthDay")
-data class PersonVO(
-
-    var id: Long = 0,
+open class PersonVO(
+    @Mapping("id")
+    open var key: Long = 0,
 
     @field: JsonProperty("first_Name")
-    var firstName: String = "",
+    open var firstName: String = "",
 
     @field: JsonProperty("last_Name")
-    var lastName: String = "",
+    open var lastName: String = "",
 
-    var address: String = "",
+    open var address: String = "",
 
     @field: JsonIgnore
-    var gender: String = "",
+    open var gender: String = "",
 
-    var birthDay: LocalDate = LocalDate.now()
-)
+    open var birthDay: LocalDate = LocalDate.now()
+) : RepresentationModel<PersonVO>()
