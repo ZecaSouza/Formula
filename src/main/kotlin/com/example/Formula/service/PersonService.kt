@@ -1,10 +1,13 @@
 package com.example.Formula.service
 
+import com.example.Formula.controller.PersonController
 import com.example.Formula.data.vo.v1.PersonVO
 import com.example.Formula.mapper.ModelMapperWrapper
 import com.example.Formula.model.Person
 import com.example.Formula.repository.PersonRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
+import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
@@ -18,10 +21,15 @@ class PersonService(
     private val logger: Logger = Logger.getLogger(PersonService::class.java.name)
 
     fun findById(id: Long): PersonVO {
+        logger.info("find one person with ID $id")
         val person = repository.findById(id).orElseThrow {
             ResponseStatusException(HttpStatus.NOT_FOUND, "Person with id $id not found")
         }
-        return ModelMapperWrapper.map(person, PersonVO::class.java)
+        val personVO: PersonVO =  ModelMapperWrapper.map(person, PersonVO::class.java)
+
+        val withSelfRel = linkTo(PersonController::class.java ).slash(personVO.key).withSelfRel()
+        personVO.add(withSelfRel)
+        return personVO
     }
 
     fun create(personVO: PersonVO): PersonVO {
