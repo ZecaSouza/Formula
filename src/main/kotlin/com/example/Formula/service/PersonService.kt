@@ -21,30 +21,30 @@ class PersonService(
     private val logger: Logger = Logger.getLogger(PersonService::class.java.name)
 
     fun findById(id: Long): PersonVO {
-        logger.info("find one person with ID $id")
+        logger.info("Finding one person with ID $id")
         val person = repository.findById(id).orElseThrow {
             ResponseStatusException(HttpStatus.NOT_FOUND, "Person with id $id not found")
         }
-        val personVO: PersonVO =  ModelMapperWrapper.map(person, PersonVO::class.java)
-
-        val withSelfRel = linkTo(PersonController::class.java ).slash(personVO.key).withSelfRel()
-        personVO.add(withSelfRel)
+        val personVO: PersonVO = ModelMapperWrapper.map(person, PersonVO::class.java)
+        addHateoasLinks(personVO)
         return personVO
     }
 
     fun create(personVO: PersonVO): PersonVO {
-        logger.info("Creating person: ${personVO.firstName}")
+        logger.info("Creating person: ${personVO.firstName} ${personVO.lastName}")
         val entity: Person = ModelMapperWrapper.map(personVO, Person::class.java)
         val saved = repository.save(entity)
-        return ModelMapperWrapper.map(saved, PersonVO::class.java)
+        val personVOResult: PersonVO = ModelMapperWrapper.map(saved, PersonVO::class.java)
+        addHateoasLinks(personVOResult)
+        return personVOResult
     }
 
     fun updateById(id: Long, personVO: PersonVO): PersonVO {
+        logger.info("Updating person with ID $id")
         val existingPerson = repository.findById(id).orElseThrow {
             ResponseStatusException(HttpStatus.NOT_FOUND, "Person with id $id not found")
         }
 
-        logger.info("Updating person with id $id")
         existingPerson.apply {
             firstName = personVO.firstName
             lastName = personVO.lastName
@@ -54,19 +54,36 @@ class PersonService(
         }
 
         val updated = repository.save(existingPerson)
-        return ModelMapperWrapper.map(updated, PersonVO::class.java)
+        val personVOResult: PersonVO = ModelMapperWrapper.map(updated, PersonVO::class.java)
+        addHateoasLinks(personVOResult)
+        return personVOResult
     }
 
     fun deleteById(id: Long) {
+        logger.info("Deleting person with ID $id")
         if (!repository.existsById(id)) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, "Person with id $id not found")
         }
-        logger.info("Deleting person with id $id")
         repository.deleteById(id)
     }
 
     fun findAll(): List<PersonVO> {
+        logger.info("Finding all persons")
         val persons = repository.findAll()
-        return ModelMapperWrapper.mapList(persons, PersonVO::class.java)
+        val personVOList = ModelMapperWrapper.mapList(persons, PersonVO::class.java)
+
+        personVOList.forEach { addHateoasLinks(it) }
+
+        return personVOList
+    }
+
+    private fun addHateoasLinks(personVO: PersonVO) {
+        val selfLink = linkTo(PersonController::class.java).slash(personVO.key).withSelfRel()
+        personVO.add(selfLink)
+
+        // Você pode adicionar outros links úteis, como:
+        // val allPersonsLink = linkTo(methodOn(PersonController::class.java).findAll()).withRel("all-persons")
+        // personVO.add(allPersonsLink)
     }
 }
+
