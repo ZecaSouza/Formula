@@ -10,6 +10,7 @@ import java.time.LocalDate
 @JsonPropertyOrder("id", "address", "first_Name", "last_Name", "gender", "birthDay")
 open class PersonVO(
     @Mapping("id")
+    @field:JsonProperty("id")
     open var key: Long = 0,
 
     @field: JsonProperty("first_Name")

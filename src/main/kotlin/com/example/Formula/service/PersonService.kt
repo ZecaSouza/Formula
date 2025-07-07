@@ -22,12 +22,16 @@ class PersonService(
 
     fun findById(id: Long): PersonVO {
         logger.info("Finding one person with ID $id")
+
         val person = repository.findById(id).orElseThrow {
-            ResponseStatusException(HttpStatus.NOT_FOUND, "Person with id $id not found")
+            ResponseStatusException(HttpStatus.NOT_FOUND, "Person not found")
         }
-        val personVO: PersonVO = ModelMapperWrapper.map(person, PersonVO::class.java)
-        addHateoasLinks(personVO)
-        return personVO
+
+        val vo = ModelMapperWrapper.map(person, PersonVO::class.java)
+
+        addHateoasLinks(vo)
+
+        return vo
     }
 
     fun create(personVO: PersonVO): PersonVO {
@@ -81,9 +85,6 @@ class PersonService(
         val selfLink = linkTo(PersonController::class.java).slash(personVO.key).withSelfRel()
         personVO.add(selfLink)
 
-        // Você pode adicionar outros links úteis, como:
-        // val allPersonsLink = linkTo(methodOn(PersonController::class.java).findAll()).withRel("all-persons")
-        // personVO.add(allPersonsLink)
     }
 }
 
