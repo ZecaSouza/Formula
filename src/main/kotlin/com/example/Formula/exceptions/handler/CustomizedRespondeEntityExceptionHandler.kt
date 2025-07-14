@@ -1,5 +1,6 @@
 package com.example.Formula.exceptions.handler
 
+import com.example.Formula.exceptions.RequiredObjectIsNullException
 import com.example.Formula.exceptions.ResourceNotFoundException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -79,5 +80,18 @@ class CustomizedRespondeEntityExceptionHandler : ResponseEntityExceptionHandler(
             request.getDescription(false)
         )
         return ResponseEntity(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @ExceptionHandler(RequiredObjectIsNullException::class)
+    fun handleBadRequestException(
+        ex: Exception,
+        request: WebRequest
+    ): ResponseEntity<Any> {
+        val errorDetails = ExceptionResponse(
+            Date(),
+            ex.message,
+            request.getDescription(false)
+        )
+        return ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST)
     }
 }

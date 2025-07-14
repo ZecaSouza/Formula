@@ -1,20 +1,22 @@
 package com.example.Formula.mockito.service
 
 import com.example.Formula.data.vo.v1.PersonVO
+import com.example.Formula.exceptions.RequiredObjectIsNullException
 import com.example.Formula.repository.PersonRepository
 import com.example.Formula.service.PersonService
 import com.example.Formula.unittest.mapper.MockPerson
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertNotNull
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.any
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
-import org.mockito.MockitoAnnotations
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.Mockito.verify
+import java.lang.Exception
 import java.util.Optional
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -57,6 +59,17 @@ class PersonServiceTest {
     }
 
     @Test
+    fun createWithNullPerson() {
+        val exception = assertThrows<RequiredObjectIsNullException> {
+            service.create(null)
+        }
+
+        val expectedMessage = "It is not allowed to persist a null object!"
+        val actualMessage = exception.message
+        assertTrue { actualMessage!!.contains(expectedMessage) }
+    }
+
+    @Test
     fun create() {
         val personId = 1L
         val vo = inputObject.mockVO(1).apply { key = personId }
@@ -74,6 +87,17 @@ class PersonServiceTest {
         assertEquals("First Name Test1", result.firstName)
         assertEquals("Last name 1", result.lastName)
         assertEquals("FEMALE", result.gender)
+    }
+
+    @Test
+    fun updateWithNullPerson() {
+        val exception = assertThrows<RequiredObjectIsNullException> {
+            service.create(null)
+        }
+
+        val expectedMessage = "It is not allowed to persist a null object!"
+        val actualMessage = exception.message
+        assertTrue { actualMessage!!.contains(expectedMessage) }
     }
 
     @Test
