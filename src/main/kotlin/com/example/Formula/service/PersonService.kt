@@ -2,6 +2,7 @@ package com.example.Formula.service
 
 import com.example.Formula.controller.PersonController
 import com.example.Formula.data.vo.v1.PersonVO
+import com.example.Formula.exceptions.RequiredObjectIsNullException
 import com.example.Formula.mapper.ModelMapperWrapper
 import com.example.Formula.model.Person
 import com.example.Formula.repository.PersonRepository
@@ -34,7 +35,8 @@ class PersonService(
         return vo
     }
 
-    fun create(personVO: PersonVO): PersonVO {
+    fun create(personVO: PersonVO?): PersonVO {
+        if (personVO == null) throw RequiredObjectIsNullException()
         logger.info("Creating person: ${personVO.firstName} ${personVO.lastName}")
         val entity: Person = ModelMapperWrapper.map(personVO, Person::class.java)
         val saved = repository.save(entity)
@@ -44,6 +46,7 @@ class PersonService(
     }
 
     fun updateById(id: Long, personVO: PersonVO): PersonVO {
+        if (personVO == null) throw RequiredObjectIsNullException()
         logger.info("Updating person with ID $id")
         val existingPerson = repository.findById(id).orElseThrow {
             ResponseStatusException(HttpStatus.NOT_FOUND, "Person with id $id not found")
