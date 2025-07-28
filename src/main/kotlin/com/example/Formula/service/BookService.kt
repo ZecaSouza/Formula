@@ -54,7 +54,7 @@ class BookService(
         return voResult
     }
 
-    fun updateById(id: Long, bookVO: BookVO): BookVO {
+    fun updateById(id: Long, bookVO: BookVO?): BookVO {
         if (bookVO == null) throw RequiredObjectIsNullException()
         logger.info("Updating book with ID $id")
         val existingBook = repository.findById(id).orElseThrow {
