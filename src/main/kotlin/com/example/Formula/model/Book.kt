@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Table
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Entity
@@ -18,7 +19,7 @@ class Book {
 
     var author: String = ""
 
-    var launchDate: LocalDateTime = LocalDateTime.now()
+    var launchDate: LocalDate = LocalDate.now()
 
     var price: BigDecimal = BigDecimal.ZERO
 
