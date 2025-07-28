@@ -92,7 +92,7 @@ class PersonController(
         "/{id}",
         produces = [MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML]
     )
-    fun deletePersonById(
+    fun deletePersonById( 
         @Parameter(description = "ID da pessoa a ser excluída", required = true)
         @PathVariable id: Long
     ): ResponseEntity<*> {
