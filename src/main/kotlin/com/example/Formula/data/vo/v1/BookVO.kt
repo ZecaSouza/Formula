@@ -20,7 +20,7 @@ open class BookVO(
     open var title: String = "",
 
     @field:JsonProperty("launch_date")
-    open var launchDate: LocalDate = LocalDate.now(),
+    open var launchDate: LocalDateTime = LocalDateTime.now(),
 
     @field:JsonProperty("price")
     open var price: BigDecimal = BigDecimal.ZERO

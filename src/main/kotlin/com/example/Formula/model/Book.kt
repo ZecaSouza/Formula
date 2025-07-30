@@ -19,7 +19,7 @@ class Book {
 
     var author: String = ""
 
-    var launchDate: LocalDate = LocalDate.now()
+    var launchDate: LocalDateTime = LocalDateTime.now()
 
     var price: BigDecimal = BigDecimal.ZERO
 
