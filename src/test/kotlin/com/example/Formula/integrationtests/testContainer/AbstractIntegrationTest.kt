@@ -31,7 +31,11 @@ open class AbstractIntegrationTest {
                 .withPassword("testpass")
 
             private fun startContainers() {
-                Startables.deepStart(Stream.of(mysql)).join()
+                if (!mysql.isRunning) {
+                    println("Iniciando container MySQL TestContainer...")
+                    mysql.start()
+                    println("Container MySQL iniciado na URL: ${mysql.jdbcUrl}")
+                }
             }
 
             private fun createConnectionConfiguration(): MutableMap<String, Any> {
