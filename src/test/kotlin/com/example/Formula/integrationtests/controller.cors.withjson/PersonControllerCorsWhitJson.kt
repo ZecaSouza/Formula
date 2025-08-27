@@ -16,6 +16,7 @@ import io.restassured.specification.RequestSpecification
 import org.junit.jupiter.api.*
 import org.springframework.boot.test.context.SpringBootTest
 import java.time.LocalDate
+import kotlin.test.assertEquals
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
@@ -50,7 +51,7 @@ class PersonControllerCorsWithJson : AbstractIntegrationTest() {
 		mockPerson()
 
 		specification = RequestSpecBuilder()
-			.addHeader(ConfigsTest.HEADER_ORIGIN, "http://localhost:8080")
+			.addHeader(ConfigsTest.HEADER_ORIGIN, ConfigsTest.ORIGIN_LOCALHOST)
 			.setBasePath("/api/person/")
 			.setPort(ConfigsTest.SERVER_PORT)
 			.addFilter(RequestLoggingFilter(LogDetail.ALL))
@@ -78,6 +79,36 @@ class PersonControllerCorsWithJson : AbstractIntegrationTest() {
 		Assertions.assertEquals(personVO.lastName, createdPerson.lastName, "O lastName deve ser igual ao cadastrado")
 		Assertions.assertEquals(personVO.address, createdPerson.address, "O endereço deve ser igual ao cadastrado")
 		Assertions.assertEquals(personVO.gender, createdPerson.gender, "O gênero deve ser igual ao cadastrado")
+	}
+
+	@Test
+	@Order(2)
+	fun testCreateWrongOrigin() {
+		mockPerson()
+
+		specification = RequestSpecBuilder()
+			.addHeader(ConfigsTest.HEADER_ORIGIN, ConfigsTest.ORIGIN_LOCALHOST)
+			.setBasePath("/api/person/")
+			.setPort(ConfigsTest.SERVER_PORT)
+			.addFilter(RequestLoggingFilter(LogDetail.ALL))
+			.addFilter(ResponseLoggingFilter(LogDetail.ALL))
+			.build()
+
+		val content = given()
+			.spec(specification)
+			.contentType(ConfigsTest.CONTENT_TYPE_JSON)
+			.body(objectMapper.writeValueAsString(personVO))
+			.`when`()
+			.post()
+			.then()
+			.statusCode(403)
+			.extract()
+			.body()
+			.asString()
+
+		val createdPerson = objectMapper.readValue(content, PersonVO::class.java)
+
+		assertEquals("Invalid CORS request", createdPerson.gender)
 	}
 
 	private fun mockPerson() {
